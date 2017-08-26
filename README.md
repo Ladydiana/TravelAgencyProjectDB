@@ -1,5 +1,5 @@
 
-## ✈✈✈ Travel Agency Database Project for Telacad's Database-SQL class ✈✈✈
+## ✈ Travel Agency Database Project for Telacad's Database-SQL class ✈
 
 -----------------------------------------------------
 ### Requirements:
@@ -36,9 +36,9 @@
 
 ### Tools used:
 MySQL Workbench 6.3 CE
+
 XAMPP Control Panel v3.2.2
 
 -----------------------------------------------------
 ### Language:
 MySQL
-
