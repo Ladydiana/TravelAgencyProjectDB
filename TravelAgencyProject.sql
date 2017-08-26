@@ -1,3 +1,6 @@
+# @Author: Culincu Diana Cristina
+# @Github: https://github.com/Ladydiana/TravelAgencyProjectDB
+
 DROP DATABASE IF EXISTS Travel;
 CREATE DATABASE IF NOT EXISTS Travel;
 USE Travel;
