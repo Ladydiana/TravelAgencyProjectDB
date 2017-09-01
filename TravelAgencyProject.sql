@@ -60,7 +60,7 @@ DROP TABLE IF EXISTS POSITIONS;
 CREATE TABLE IF NOT EXISTS POSITIONS (
 	posID INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	posName VARCHAR(45) NOT NULL UNIQUE,
-    posBaseSalary DOUBLE(4,2) NOT NULL
+    posBaseSalary DOUBLE(10,2) NOT NULL
 );
 
 DROP TABLE IF EXISTS EMPLOYEES;
@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS FLIGHTS (
 	fliID INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     fliStartPoint INTEGER NOT NULL,
     fliEndPoint INTEGER NOT NULL,
-    fliStartTime DATE NOT NULL,
-    fliEndTime DATE NOT NULL,
+    fliStartTime DATETIME NOT NULL,
+    fliEndTime DATETIME NOT NULL,
     fliClass ENUM ('First', 'Business', 'Economy') NOT NULL,
     fliLayoverBool BOOL NOT NULL DEFAULT FALSE,
     fliLayoverNo TINYINT NOT NULL DEFAULT 0,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS PACKAGES (
     packTitle VARCHAR(30) NOT NULL,
 	packDescription TEXT,
     packLocationID INTEGER NOT NULL,
-    packHotelID INTEGER NOT NULL,
+    packHotelID INTEGER NULL,
     packDuration TINYINT NOT NULL,
     packPrice DOUBLE (4,2),
     packPriceCurrency VARCHAR(3),
@@ -148,12 +148,12 @@ CREATE TABLE IF NOT EXISTS PACKAGES (
     packDiscountAt TINYINT,
     packDiscountAmnt DOUBLE (4,2),
     packTransportIncluded BOOL DEFAULT false,
-    packFlightNo INTEGER NULL,
+    packFlightNo VARCHAR(30) NULL,
     packBusNo INTEGER NULL,
     FOREIGN KEY (packLocationID) REFERENCES COUNTRIES (ctryID)
     ON UPDATE CASCADE,
-    FOREIGN KEY (packFlightNo) REFERENCES FLIGHTS (fliID)
-    ON UPDATE CASCADE, 
+    #FOREIGN KEY (packFlightNo) REFERENCES FLIGHTS (fliID)
+    #ON UPDATE CASCADE, 
     FOREIGN KEY (packBusNo) REFERENCES BUSES (busID)
     ON UPDATE CASCADE, 
     FOREIGN KEY (packHotelID) REFERENCES HOTELS (hotID) 
@@ -176,6 +176,8 @@ CREATE TABLE IF NOT EXISTS BOOKINGS (
 /*
 	Triggers
  */
+ 
+ /*
 DELIMITER $$
 DROP TRIGGER IF EXISTS trgInsCountries; $$
 CREATE TRIGGER trgInsCountries BEFORE INSERT ON COUNTRIES
@@ -199,12 +201,13 @@ END;
 $$
 
 DELIMITER ;
-
+*/
 
 /* 
  *	FUNCTIONS
  */
  
+ /*
 DELIMITER $$
 DROP FUNCTION IF EXISTS fInsCity; $$
 CREATE FUNCTION fInsCity(cityName VARCHAR(45), countryName VARCHAR(45))
@@ -239,7 +242,7 @@ END $$
 
 DELIMITER ;
 
-
+*/
 
 /*
  *	INSERTS
@@ -251,41 +254,207 @@ DELIMITER ;
 											('NORTH AMERICA'), 
 											('   AuSTRALIa'), 
 											('ANTArctICA');
+  
+  
+SELECT * FROM CONTINENTS;
+ /*
+  *	INDEX
+  */
+  
+CREATE INDEX ord_Cont on CONTINENTS (contName);
+SELECT * FROM CONTINENTS;
                                             
-SELECT * FROM CONTINENTS ORDER BY contName ASC;
+
 DELETE FROM CONTINENTS WHERE contName='ASIIA';
 INSERT INTO CONTINENTS(contName) VALUES ('Asia ');
-/* 
-INSERT INTO COUNTRIES (name) VALUES 
-	('Italy'),
-    ('Greece'),
-    ('SPAIN'),
-    ('Portugal'),
-    ('germany'),
-    ('romania'),
-    ('croatia'),
-    ('the uk'),
-    ('ireland'),
-    ('turkey'),
-    ('russia'),
-    ('HOlland'),
-    ('FranCe');
-    
+
+INSERT INTO positions(posName, posBaseSalary) VALUES 	('Driver', 700),
+														('Intern', 300),
+                                                        ('CEO', 5000),
+                                                        ('CFO', 5000),
+                                                        ('Travel Consultant', 1500),
+                                                        ('Sales Assistant', 1300),
+                                                        ('Customer Service Representative', 1000),
+                                                        ('Business Travel Consultant', 1700),
+                                                        ('Travel Advisor', 1200),
+                                                        ('Cabin Crew', 2000),
+                                                        ('Account Manager', 1500);
+SELECT * from positions;
+		
+SELECT * FROM CONTINENTS;
+        
 
 
+INSERT INTO COUNTRIES (ctryName, id_cont) VALUES 
+	('Italy', 2),
+    ('Greece', 2),
+    ('SPAIN', 2),
+    ('Portugal', 2),
+    ('germany', 2),
+    ('romania', 2),
+    ('croatia', 2),
+    ('the uk', 2),
+    ('ireland', 2),
+    ('turkey', 8),
+    ('russia', 8),
+    ('HOlland', 2),
+    ('FranCe', 2),
+    ('Australia', 6);
 SELECT * from countries;
+CREATE INDEX ctry_Ind on COUNTRIES (ctryName);
 
 
-
+INSERT INTO CITIES (citName, id_country) values
+	('Rome', 1),
+    ('Venice', 1),
+    ('Milano', 1),
+    ('Athens', 2),
+    ('Barcelona', 3),
+    ('Porto', 4),
+    ('Berlin', 5),
+    ('Antalya', 10),
+    ('Istanbul', 10),
+    ('Moscow', 11),
+    ('Sankt Petersburg', 11),
+    ('Amsterdam', 12),
+    ('Paris', 13),
+    ('Nisa', 13),
+    ('Sydney', 14);
 
 SELECT * from cities;
 
-
-
-
-UPDATE COUNTRIES set name=upper(name) WHERE 1=1;	# Required disabling safe mode
+UPDATE COUNTRIES set ctryName=upper(ctryName) WHERE 1=1;	# Required disabling safe mode
 SELECT * from COUNTRIES;
-*/
+
+
+INSERT INTO CUSTOMERS	(custName, custSurname, custCardNo, custSocialSecurityNo, custAddress) VALUES
+						# Used http://www.theonegenerator.com/s to generate some of the values
+                        # Used https://www.doogal.co.uk/RandomAddresses.php to generate addresses (all UK though)
+						('Emilia', 'Clarke', '4716785105999216', '044-20-3064', '15 New Sandridge, Newbiggin-by-the-Sea NE64 6DX, UK'),
+                        ('Sherlock', 'Holmes', '5237000519035418', '222-20-0107', '221B Baker Street'),
+                        ('Matt', 'Murdock', '378449500019826', '654-03-7276', '22 Bergholt Ave, Ilford IG4 5NE, UK'),
+                        ('Jessica', 'Jones', '374737367310237', '416-24-0430', '29 Withy Mead, London E4 6JY, UK'),
+                        ('Oliver', 'Queen', '377467177618507', '001-70-8727', '15C Conewood St, London N5 1BZ, UK'),
+                        ('Amelia', 'Earhart', '370476885874911', '003-18-9982', '9 Wearfield, Sunderland SR5 2TG, UK'), 
+                        ('Elektra', 'Natchios', '347184958274940', '529-98-7900', '10 Gale Cl, Hales, Norwich NR14 6SN, UK'),
+						('Amberle', 'Elessedil', '4514029875991689', '215-82-0623', '38 Anderson St, Inverness IV3 8DF, UK'),
+                        ('Emma', 'Swan', '5206278971927036', '576-44-5409', 'Longwood Ln, United Kingdom'),
+                        ('Harry', 'Potter', '5304721916534756', '221-78-6228', '21 Privet Drive, Little Winging, Surrey'),
+                        ('Luke', 'Cage', '371380687639226', '135-22-9947', 'Merry Ln, Highbridge TA9 3PS, UK');
+select * from customers;
+select * from cities;
+
+ALTER table hotels ADD hotName VARCHAR(30);
+
+INSERT INTO hotels (hotLocID, hotName, hotAddress , hotContactEmail) VALUES
+(12, 'Triple Fjord Hotel', 'Amsterdam 1', 'contact@fjordhotel.com'),
+(8, 'Suleyiman Saray', 'Antalya 1', 'contact@ssaray.com'),
+(4, 'Troya Hotel', 'Athens 1', 'contact@troyahotels.com'),
+(5, 'Hotel Barca', 'Barca 1', 'contact@barcahotel.com'),
+(7, 'Berliner Hotels', 'Berlin Alexanderplatz 1', 'contact@berlineralexhotel.com'),
+(9, 'Hotel Galata', 'Istanbul Galata Bridge 1', 'contact@galatahotel.com'),
+(3, 'Hotel Dom Milano', 'Milano Dom 1', 'contact@dommilano.com'),
+(13, 'Eiffel Hotel Paris', 'Paris Louvre 1', 'contact@eiffelhotels.com'),
+(6, 'Porto Wino Hostel', 'Porto 1', 'contact@portohostel.com'),
+(1, 'Colosseum Hotel', 'Rome Colosseum 1', 'contact@colloseumhotels.it'),
+(2, 'Hotel Grand Canale', 'Venice Grand Canal 1', 'contact@grandcanelehotels.com'),
+(15, 'Sydney Opera Hotel', 'Sydney Opera 1', 'contact@syoperahotel.com');
+select * from hotels;
+
+UPDATE hotels SET hotTelephoneNo='+61 491 570 156' where hotLocId=15;
+UPDATE hotels set hotTelephoneNo='+39 065555555' where hotLocID=3;
+UPDATE hotels set hotTelephoneNo='+30 1 1234567' where hotLocID=4;
+
+
+select * from positions;
+DELETE from employees where 1=1;
+INSERT INTO employees (empName, empSurname, position_id, empSalary, empAccountNo, empStartDate) VALUES
+('James', 'Howlett', 7, 100, '4556315376438273', '2015-12-11'),
+('Sara', 'Lance', 8, 100, '342875545339832', '2014-07-01'),
+('Felicity', 'Smoak', 3, 100, '378951202793145', '2017-05-03'),
+('James', 'Rhodes', 1, 100, '5278461483279004', '2011-07-06'),
+('Vegeta', 'Prince', 1, 100, '4929325031020937', '2017-02-09'),
+('Clark', 'Kent', 6, 100, '5269768863327877', '2015-03-10'),
+('Bruce', 'Wayne', 4, 100, '378747694766783', '2016-03-02'),
+('Iam', 'Groot', 2, 100, '6011107596622883', '2017-06-13'),
+('Wilson', 'Fisk', 11, 100, '340233352451740', '2015-10-10'),
+('Diana', 'Prince', 5, 100, '4556400401622875', '2017-04-09')
+;
+
+select * from employees;
+
+# Setting up salary as minimum salary for their function
+ALTER TABLE employees CHANGE empSalary empSalary DOUBLE(10,2) NOT NULL;
+UPDATE employees SET empSalary = (select posBaseSalary from positions where position_id=posID);
+
+
+SELECT * from cities;
+select * from countries;
+INSERT INTO CITIES (citName, id_country) VALUES ('Bucharest', 6);
+DELETE FROM flights where 1=1;
+ALTER TABLE flights CHANGE fliPrice fliPrice DOUBLE(8,2);
+INSERT INTO flights	(fliStartPoint, fliEndPoint, fliStartTime, fliEndTime, fliClass, fliLayoverBool, fliPrice, fliPriceCurrency) values
+					(16, 3, '2017-09-21 08:50', '2017-09-21 10:30', 'Economy', false, 130, 'Euro'),
+                    (13, 16, '2017-09-27 11:00', '2017-09-27 12:30', 'Economy', false, 120, 'Euro'),
+					(16, 12, '2017-09-25 11:30', '2017-09-25 14:00', 'Economy', false, 200, 'Euro'),
+                    (12, 16, '2017-10-03 14:00', '2017-09-25 16:00', 'Economy', false, 210, 'Euro'),
+                    (16, 7, '2017-12-29 06:15', '2017-12-29 09:05', 'Economy', false, 110, 'Euro'),
+                    (7, 16, '2018-01-03 10:00', '2017-01-03 11:30', 'Economy', false, 100, 'Euro'),
+                    (16, 13, '2017-12-20 07:20', '2017-12-20 10:30', 'Business', false, 320, 'Euro'),
+                    (13, 16, '2017-12-27 11:00', '2017-12-27 13:00', 'Business', false, 300, 'Euro'),
+                    (16, 6, '2017-08-25 13:20', '2017-08-25 16:30', 'Economy', false, 210, 'Euro'),
+                    (6, 16, '2017-08-30 17:00', '2017-08-30 19:30', 'Economy', false, 190, 'Euro'),
+                    (16, 14, '2017-09-13 08:10', '2017-09-13 10:25', 'First', false, 340, 'Euro'),
+                    (14, 16, '2017-09-18 11:10', '2017-09-18 13:25', 'First', false, 350, 'Euro'),
+                    (16, 5, '2017-10-11 08:50', '2017-10-11 10:30', 'Economy', false, 130, 'Euro'),
+                    (5, 16, '2017-10-15 11:00', '2017-10-15 13:30', 'Economy', false, 120, 'Euro');
+SELECT * from flights;
+INSERT INTO buses(driver_id) values (4), (6);
+SELECT * from buses;
+select * from cities;
+select * from hotels;
+
+DELETE from packages where 1=1;
+INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packBusNo) VALUES
+					('Visit Istanbul', 9, 6, 2, '2017-09-20', '2017-09-27', 1),
+                    ('Antalya Holiday', 9, 2, 2, '2017-09-03', '2017-09-10', 2),
+                    ('Athens City Break', 4, 3, 2, '2017-10-13', '2017-10-16', 1)
+;
+
+
+select * from flights;
+select * from cities;
+select * from hotels;
+INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packFlightNo) VALUES
+					('Visit Milano', 3, 7, 2, '2017-09-21', '2017-09-27', '1;2'),
+					('Visit Amsterdam', 12, 1, 2, '2017-09-25', '2017-10-03', '3;4'),
+                    ('Berlin New Year\'s', 7, 5, 2, '2017-12-29', '2018-01-03', '5;6' ),
+                    ('Paris in Love', 13, 8, 2, '2017-12-20', '2017-12-27', '7;8'),
+                    ('Taste Porto Wine', 6, 9, 2, '2017-08-25', '2017-2017-08-30', '9;10'),
+                    ('Nisa Pink Beach',14, NULL, 2, '2017-09-13', '2017-09-18', '11;12'),
+                    ('Have a walk on the Rambla', 5, 4, 2, '2017-10-11', '2017-10-15', '13;14'),
+                    ('Gondola on the canal', 2, 11, 2, '2017-11-16', '2017-11-22', NULL);
+select * from packages;
+select * from customers;
+
+INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
+	(1, 7),
+    (2, 1),
+    (3, 5),
+    (1, 9),
+    (5, 11), 
+    (6, 11),
+    (4, 3),
+    (7, 6),
+    (8, 11),
+    (9, 11),
+    (9, 7),
+    (10, 2),
+    (11, 8),
+    (7, 4), 
+    (6 ,4),
+    (10, 10);
+
 
 /*
 
