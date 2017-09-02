@@ -15,13 +15,13 @@
 	* delete (minimum 3 examples)						✓
 
 4. Various queries using select:
-	* Operators
-	* predefined MySQL functions: mathematical, comparison, conditional, for strings, for dates
+	* Operators	✓
+	* predefined MySQL functions: mathematical ✓, comparison ✓, conditional, for strings, for dates ✓
 	* group functions and conditions
 	* joins: inner join, outer join
 	* sub-queries (minimum 3 examples)
 
-5. Views (minimum 1 example)
+5. Views (minimum 1 example)	✓
 
 6. Functions (minimum 3 examples)
 
