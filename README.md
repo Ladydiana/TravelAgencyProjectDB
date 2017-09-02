@@ -3,7 +3,7 @@
 
 -----------------------------------------------------
 ### Requirements:
-1. Creating the ERD database diagram.
+1. Creating the ERD database diagram. ✓
 
 2. Perform LDD operations:
 	* creating tables: create tables (minimum 4 tables), drop table		✓
@@ -31,6 +31,11 @@
 
 9. Triggers (minimum 3 examples)
 
+
+-----------------------------------------------------
+### EER Diagram
+
+![alt text](https://github.com/Ladydiana/TravelAgencyProjectDB/blob/master/EER_diagram_Screenshot_PNG.png)
 
 -----------------------------------------------------
 
