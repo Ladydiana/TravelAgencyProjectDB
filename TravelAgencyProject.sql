@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS PACKAGES (
     packLocationID INTEGER NOT NULL,
     packHotelID INTEGER NULL,
     packDuration TINYINT NOT NULL,
-    packPrice DOUBLE (4,2),
+    packPrice DOUBLE (10,2) NULL,
     packPriceCurrency VARCHAR(3),
     packPplNo TINYINT NOT NULL DEFAULT 1,
     packStartDate DATE NOT NULL,
@@ -180,12 +180,12 @@ CREATE TABLE IF NOT EXISTS BOOKINGS (
 #to, from, date_start, date_end, price
 DROP view if exists flight_price_list;
 CREATE VIEW flight_price_list AS
-SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'To', true as 'Return', date(a.fliStartTime) as 'Date start', date(b.fliStartTime) as 'Date Return', a.fliPrice+b.fliPrice as 'Price', 'EURO' as 'Currency'
+SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'To', true as 'Return', date(a.fliStartTime) as 'Date start', date(b.fliStartTime) as 'Date Return', a.fliPrice+b.fliPrice as 'Price', 'EUR' as 'Currency'
 FROM flights a, flights b
 WHERE (a.fliStartPoint=b.fliEndPoint) and (a.fliEndPoint=b.fliStartPoint)
 and (a.fliStartTime < b.fliStartTime)
 UNION
-SELECT fliStartPoint as 'From', fliEndPoint as 'To', false as 'Return', date(fliStartTime) as 'Date start', NULL as 'Date Return', fliPrice as 'Price', 'EURO' as 'Currency'
+SELECT fliStartPoint as 'From', fliEndPoint as 'To', false as 'Return', date(fliStartTime) as 'Date start', NULL as 'Date Return', fliPrice as 'Price', 'EUR' as 'Currency'
 FROM flights;
 
 
@@ -366,7 +366,7 @@ INSERT INTO hotels (hotLocID, hotName, hotAddress , hotContactEmail, hotPricePEr
 UPDATE hotels SET hotTelephoneNo='+61 491 570 156' where hotLocId=15;
 UPDATE hotels set hotTelephoneNo='+39 065555555' where hotLocID=3;
 UPDATE hotels set hotTelephoneNo='+30 1 1234567' where hotLocID=4;
-UPDATE hotels set hotPriceCurrency='EURO';
+UPDATE hotels set hotPriceCurrency='EUR';
 
 
 DELETE from employees where 1=1;
@@ -393,43 +393,43 @@ INSERT INTO CITIES (citName, id_country) VALUES ('Bucharest', 6);
 DELETE FROM flights where 1=1;
 ALTER TABLE flights CHANGE fliPrice fliPrice DOUBLE(8,2);
 INSERT INTO flights	(fliStartPoint, fliEndPoint, fliStartTime, fliEndTime, fliClass, fliLayoverBool, fliPrice, fliPriceCurrency) values
-					(16, 3, '2017-09-21 08:50', '2017-09-21 10:30', 'Economy', false, 130, 'Euro'),
-                    (3, 16, '2017-09-27 11:00', '2017-09-27 12:30', 'Economy', false, 120, 'Euro'),
-					(16, 12, '2017-09-25 11:30', '2017-09-25 14:00', 'Economy', false, 200, 'Euro'),
-                    (12, 16, '2017-10-03 14:00', '2017-09-25 16:00', 'Economy', false, 210, 'Euro'),
-                    (16, 7, '2017-12-29 06:15', '2017-12-29 09:05', 'Economy', false, 110, 'Euro'),
-                    (7, 16, '2018-01-03 10:00', '2017-01-03 11:30', 'Economy', false, 100, 'Euro'),
-                    (16, 13, '2017-12-20 07:20', '2017-12-20 10:30', 'Business', false, 320, 'Euro'),
-                    (13, 16, '2017-12-27 11:00', '2017-12-27 13:00', 'Business', false, 300, 'Euro'),
-                    (16, 6, '2017-08-25 13:20', '2017-08-25 16:30', 'Economy', false, 210, 'Euro'),
-                    (6, 16, '2017-08-30 17:00', '2017-08-30 19:30', 'Economy', false, 190, 'Euro'),
-                    (16, 14, '2017-09-13 08:10', '2017-09-13 10:25', 'First', false, 340, 'Euro'),
-                    (14, 16, '2017-09-18 11:10', '2017-09-18 13:25', 'First', false, 350, 'Euro'),
-                    (16, 5, '2017-10-11 08:50', '2017-10-11 10:30', 'Economy', false, 130, 'Euro'),
-                    (5, 16, '2017-10-15 11:00', '2017-10-15 13:30', 'Economy', false, 120, 'Euro');
+					(16, 3, '2017-09-21 08:50', '2017-09-21 10:30', 'Economy', false, 130, 'EUR'),
+                    (3, 16, '2017-09-27 11:00', '2017-09-27 12:30', 'Economy', false, 120, 'EUR'),
+					(16, 12, '2017-09-25 11:30', '2017-09-25 14:00', 'Economy', false, 200, 'EUR'),
+                    (12, 16, '2017-10-03 14:00', '2017-09-25 16:00', 'Economy', false, 210, 'EUR'),
+                    (16, 7, '2017-12-29 06:15', '2017-12-29 09:05', 'Economy', false, 110, 'EUR'),
+                    (7, 16, '2018-01-03 10:00', '2017-01-03 11:30', 'Economy', false, 100, 'EUR'),
+                    (16, 13, '2017-12-20 07:20', '2017-12-20 10:30', 'Business', false, 320, 'EUR'),
+                    (13, 16, '2017-12-27 11:00', '2017-12-27 13:00', 'Business', false, 300, 'EUR'),
+                    (16, 6, '2017-08-25 13:20', '2017-08-25 16:30', 'Economy', false, 210, 'EUR'),
+                    (6, 16, '2017-08-30 17:00', '2017-08-30 19:30', 'Economy', false, 190, 'EUR'),
+                    (16, 14, '2017-09-13 08:10', '2017-09-13 10:25', 'First', false, 340, 'EUR'),
+                    (14, 16, '2017-09-18 11:10', '2017-09-18 13:25', 'First', false, 350, 'EUR'),
+                    (16, 5, '2017-10-11 08:50', '2017-10-11 10:30', 'Economy', false, 130, 'EUR'),
+                    (5, 16, '2017-10-15 11:00', '2017-10-15 13:30', 'Economy', false, 120, 'EUR');
 
 INSERT INTO buses(driver_id) values (4), (6);
 
 
 DELETE from packages where 1=1;
-INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packBusNo) VALUES
-					('Visit Istanbul', 9, 6, 2, '2017-09-20', '2017-09-27', 1),
-                    ('Antalya Holiday', 8, 2, 2, '2017-09-03', '2017-09-10', 2),
-                    ('Athens City Break', 4, 3, 2, '2017-10-13', '2017-10-16', 1)
+INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packBusNo, packTransportIncluded) VALUES
+					('Visit Istanbul', 9, 6, 2, '2017-09-20', '2017-09-27', 1, true),
+                    ('Antalya Holiday', 8, 2, 2, '2017-09-03', '2017-09-10', 2, true),
+                    ('Athens City Break', 4, 3, 2, '2017-10-13', '2017-10-16', 1, true)
 ;
 
 
 
-INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packFlightNo) VALUES
-					('Visit Milano', 3, 7, 2, '2017-09-21', '2017-09-27', '1;2'),
-					('Visit Amsterdam', 12, 1, 2, '2017-09-25', '2017-10-03', '3;4'),
-                    ('Berlin New Year\'s', 7, 5, 2, '2017-12-29', '2018-01-03', '5;6' ),
-                    ('Paris in Love', 13, 8, 2, '2017-12-20', '2017-12-27', '7;8'),
-                    ('Taste Porto Wine', 6, 9, 2, '2017-08-25', '2017-2017-08-30', '9;10'),
-                    ('Nisa Pink Beach',14, NULL, 2, '2017-09-13', '2017-09-18', '11;12'),
-                    ('Have a walk on the Rambla', 5, 4, 2, '2017-10-11', '2017-10-15', '13;14'),
-                    ('Gondola on the canal', 2, 11, 2, '2017-11-16', '2017-11-22', NULL),
-                    ('Sydney in love', 15, 12, 2, '2018-03-12', '2018-03-27', NULL);
+INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packFlightNo, packTransportIncluded) VALUES
+					('Visit Milano', 3, 7, 2, '2017-09-21', '2017-09-27', '1;2', true),
+					('Visit Amsterdam', 12, 1, 2, '2017-09-25', '2017-10-03', '3;4', true),
+                    ('Berlin New Year\'s', 7, 5, 2, '2017-12-29', '2018-01-03', '5;6', true ),
+                    ('Paris in Love', 13, 8, 2, '2017-12-20', '2017-12-27', '7;8', true),
+                    ('Taste Porto Wine', 6, 9, 2, '2017-08-25', '2017-08-30', '9;10', true),
+                    ('Nisa Pink Beach',14, NULL, 2, '2017-09-13', '2017-09-18', '11;12', true),
+                    ('Have a walk on the Rambla', 5, 4, 2, '2017-10-11', '2017-10-15', '13;14', true),
+                    ('Gondola on the canal', 2, 11, 2, '2017-11-16', '2017-11-22', NULL, false),
+                    ('Sydney in love', 15, 12, 2, '2018-03-12', '2018-03-27', NULL, false);
 
 INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
 	(1, 7),
@@ -449,6 +449,57 @@ INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
     (6 ,4),
     (10, 10);
     
+
+# Select all packages with the number of customers who selected it
+	select a.packTitle as 'Title', citName as 'City Name', count(a.bookCustomerID) as 'Number of Reservations'
+	from (	select packTitle, packLocationID, bookCustomerID from packages left join bookings
+			on bookPackageID=packID) as a 
+    inner join cities on
+	a.packLocationID=citID
+	group by (a.packLocationID)
+	;
+    
+UPDATE packages set packPriceCurrency='EUR';
+
+#Calculate package price
+#Step 1 update for the ones with flights included
+UPDATE packages set packPrice= (	
+									SELECT d.price + (hotPricePErNight * datediff(packEndDate, packStartDate))  from
+												(	SELECT f.price, packLocationID as 'location' from flight_price_list f
+													join packages  on f.to=packLocationID
+													where f.return=1 
+												) d, hotels
+									WHERE d.location=packLocationID and hotLocID=d.location
+                                    
+                                ) 
+where packTransportIncluded=true and packFlightNo is not null;
+#Step 2 update for the ones with bus included
+UPDATE packages set packPrice= (	
+									SELECT (hotPricePErNight * datediff(packEndDate, packStartDate)) + 100  from
+											hotels
+									WHERE hotLocID=packLocationID
+                                ) 
+where packTransportIncluded=true and packBusNo is not null;
+#Step 3 update for the ones with no transport included
+UPDATE packages set packPrice= (	
+									SELECT (hotPricePErNight * datediff(packEndDate, packStartDate)) + 50  from
+											hotels
+									WHERE hotLocID=packLocationID
+                                ) 
+where packTransportIncluded=false;
+#Step 4 update for the ones with no hotel
+UPDATE packages set packPrice= (	
+									SELECT d.price  from
+												(	SELECT f.price, packLocationID as 'location' from flight_price_list f
+													join packages  on f.to=packLocationID
+													where f.return=1 
+												) d
+									WHERE d.location=packLocationID 
+                                    
+                                ) 
+where packTransportIncluded=true and packFlightNo is not null and packBusNo is null and (select hotLocID from hotels where hotLocId=packLocationID ) is null;
+
+									
 select * from continents;
 select * from countries;
 select * from cities;
@@ -460,18 +511,15 @@ select * from customers;
 select * from employees;
 select * from packages;
 select * from bookings;
-select * from flight_price_list;
+select * from flight_price_list;								
+
+# See for each customer money spent so far
+SELECT concat(custName, ' ', custSurname) as 'Name', count(bookCustomerID) as 'Number of bookings' 
+from customers join bookings
+on bookCustomerID=custID
+group by bookCustomerID;
 
 
-
-# Select all packages with the number of customers who selected it
-	select a.packTitle as 'Title', citName as 'City Name', count(a.bookCustomerID) as 'Number of Reservations'
-	from (	select packTitle, packLocationID, bookCustomerID from packages left join bookings
-			on bookPackageID=packID) as a 
-    inner join cities on
-	a.packLocationID=citID
-	group by (a.packLocationID)
-	;
 
 /*
 
