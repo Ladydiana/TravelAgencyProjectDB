@@ -125,6 +125,8 @@ DROP TABLE IF EXISTS HOTELS;
 CREATE TABLE IF NOT EXISTS HOTELS (
 	hotID INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	hotLocID INTEGER NOT NULL,
+    hotPricePerNight DOUBLE (10,2),
+    hotPriceCurrency VARCHAR(6),
     hotAddress VARCHAR(50),
     hotTelephoneNo VARCHAR(20),
     hotContactEmail VARCHAR(45),
@@ -256,14 +258,11 @@ DELIMITER ;
 											('ANTArctICA');
   
   
-SELECT * FROM CONTINENTS;
  /*
   *	INDEX
   */
   
-CREATE INDEX ord_Cont on CONTINENTS (contName);
-SELECT * FROM CONTINENTS;
-                                            
+CREATE INDEX ord_Cont on CONTINENTS (contName);               
 
 DELETE FROM CONTINENTS WHERE contName='ASIIA';
 INSERT INTO CONTINENTS(contName) VALUES ('Asia ');
@@ -279,11 +278,7 @@ INSERT INTO positions(posName, posBaseSalary) VALUES 	('Driver', 700),
                                                         ('Travel Advisor', 1200),
                                                         ('Cabin Crew', 2000),
                                                         ('Account Manager', 1500);
-SELECT * from positions;
-		
-SELECT * FROM CONTINENTS;
         
-
 
 INSERT INTO COUNTRIES (ctryName, id_cont) VALUES 
 	('Italy', 2),
@@ -300,7 +295,6 @@ INSERT INTO COUNTRIES (ctryName, id_cont) VALUES
     ('HOlland', 2),
     ('FranCe', 2),
     ('Australia', 6);
-SELECT * from countries;
 CREATE INDEX ctry_Ind on COUNTRIES (ctryName);
 
 
@@ -321,11 +315,8 @@ INSERT INTO CITIES (citName, id_country) values
     ('Nisa', 13),
     ('Sydney', 14);
 
-SELECT * from cities;
 
 UPDATE COUNTRIES set ctryName=upper(ctryName) WHERE 1=1;	# Required disabling safe mode
-SELECT * from COUNTRIES;
-
 
 INSERT INTO CUSTOMERS	(custName, custSurname, custCardNo, custSocialSecurityNo, custAddress) VALUES
 						# Used http://www.theonegenerator.com/s to generate some of the values
@@ -341,32 +332,29 @@ INSERT INTO CUSTOMERS	(custName, custSurname, custCardNo, custSocialSecurityNo, 
                         ('Emma', 'Swan', '5206278971927036', '576-44-5409', 'Longwood Ln, United Kingdom'),
                         ('Harry', 'Potter', '5304721916534756', '221-78-6228', '21 Privet Drive, Little Winging, Surrey'),
                         ('Luke', 'Cage', '371380687639226', '135-22-9947', 'Merry Ln, Highbridge TA9 3PS, UK');
-select * from customers;
-select * from cities;
 
 ALTER table hotels ADD hotName VARCHAR(30);
 
-INSERT INTO hotels (hotLocID, hotName, hotAddress , hotContactEmail) VALUES
-(12, 'Triple Fjord Hotel', 'Amsterdam 1', 'contact@fjordhotel.com'),
-(8, 'Suleyiman Saray', 'Antalya 1', 'contact@ssaray.com'),
-(4, 'Troya Hotel', 'Athens 1', 'contact@troyahotels.com'),
-(5, 'Hotel Barca', 'Barca 1', 'contact@barcahotel.com'),
-(7, 'Berliner Hotels', 'Berlin Alexanderplatz 1', 'contact@berlineralexhotel.com'),
-(9, 'Hotel Galata', 'Istanbul Galata Bridge 1', 'contact@galatahotel.com'),
-(3, 'Hotel Dom Milano', 'Milano Dom 1', 'contact@dommilano.com'),
-(13, 'Eiffel Hotel Paris', 'Paris Louvre 1', 'contact@eiffelhotels.com'),
-(6, 'Porto Wino Hostel', 'Porto 1', 'contact@portohostel.com'),
-(1, 'Colosseum Hotel', 'Rome Colosseum 1', 'contact@colloseumhotels.it'),
-(2, 'Hotel Grand Canale', 'Venice Grand Canal 1', 'contact@grandcanelehotels.com'),
-(15, 'Sydney Opera Hotel', 'Sydney Opera 1', 'contact@syoperahotel.com');
-select * from hotels;
+INSERT INTO hotels (hotLocID, hotName, hotAddress , hotContactEmail, hotPricePErNight) VALUES
+(12, 'Triple Fjord Hotel', 'Amsterdam 1', 'contact@fjordhotel.com', 50),
+(8, 'Suleyiman Saray', 'Antalya 1', 'contact@ssaray.com', 30),
+(4, 'Troya Hotel', 'Athens 1', 'contact@troyahotels.com', 30),
+(5, 'Hotel Barca', 'Barca 1', 'contact@barcahotel.com', 55),
+(7, 'Berliner Hotels', 'Berlin Alexanderplatz 1', 'contact@berlineralexhotel.com', 40),
+(9, 'Hotel Galata', 'Istanbul Galata Bridge 1', 'contact@galatahotel.com', 35),
+(3, 'Hotel Dom Milano', 'Milano Dom 1', 'contact@dommilano.com', 50),
+(13, 'Eiffel Hotel Paris', 'Paris Louvre 1', 'contact@eiffelhotels.com', 90),
+(6, 'Porto Wino Hostel', 'Porto 1', 'contact@portohostel.com', 70),
+(1, 'Colosseum Hotel', 'Rome Colosseum 1', 'contact@colloseumhotels.it', 45),
+(2, 'Hotel Grand Canale', 'Venice Grand Canal 1', 'contact@grandcanelehotels.com', 55),
+(15, 'Sydney Opera Hotel', 'Sydney Opera 1', 'contact@syoperahotel.com', 60);
 
 UPDATE hotels SET hotTelephoneNo='+61 491 570 156' where hotLocId=15;
 UPDATE hotels set hotTelephoneNo='+39 065555555' where hotLocID=3;
 UPDATE hotels set hotTelephoneNo='+30 1 1234567' where hotLocID=4;
+UPDATE hotels set hotPriceCurrency='EURO';
 
 
-select * from positions;
 DELETE from employees where 1=1;
 INSERT INTO employees (empName, empSurname, position_id, empSalary, empAccountNo, empStartDate) VALUES
 ('James', 'Howlett', 7, 100, '4556315376438273', '2015-12-11'),
@@ -381,15 +369,12 @@ INSERT INTO employees (empName, empSurname, position_id, empSalary, empAccountNo
 ('Diana', 'Prince', 5, 100, '4556400401622875', '2017-04-09')
 ;
 
-select * from employees;
 
 # Setting up salary as minimum salary for their function
 ALTER TABLE employees CHANGE empSalary empSalary DOUBLE(10,2) NOT NULL;
 UPDATE employees SET empSalary = (select posBaseSalary from positions where position_id=posID);
 
 
-SELECT * from cities;
-select * from countries;
 INSERT INTO CITIES (citName, id_country) VALUES ('Bucharest', 6);
 DELETE FROM flights where 1=1;
 ALTER TABLE flights CHANGE fliPrice fliPrice DOUBLE(8,2);
@@ -408,11 +393,9 @@ INSERT INTO flights	(fliStartPoint, fliEndPoint, fliStartTime, fliEndTime, fliCl
                     (14, 16, '2017-09-18 11:10', '2017-09-18 13:25', 'First', false, 350, 'Euro'),
                     (16, 5, '2017-10-11 08:50', '2017-10-11 10:30', 'Economy', false, 130, 'Euro'),
                     (5, 16, '2017-10-15 11:00', '2017-10-15 13:30', 'Economy', false, 120, 'Euro');
-SELECT * from flights;
+
 INSERT INTO buses(driver_id) values (4), (6);
-SELECT * from buses;
-select * from cities;
-select * from hotels;
+
 
 DELETE from packages where 1=1;
 INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packBusNo) VALUES
@@ -422,9 +405,7 @@ INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packSta
 ;
 
 
-select * from flights;
-select * from cities;
-select * from hotels;
+
 INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packFlightNo) VALUES
 					('Visit Milano', 3, 7, 2, '2017-09-21', '2017-09-27', '1;2'),
 					('Visit Amsterdam', 12, 1, 2, '2017-09-25', '2017-10-03', '3;4'),
@@ -434,8 +415,6 @@ INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packSta
                     ('Nisa Pink Beach',14, NULL, 2, '2017-09-13', '2017-09-18', '11;12'),
                     ('Have a walk on the Rambla', 5, 4, 2, '2017-10-11', '2017-10-15', '13;14'),
                     ('Gondola on the canal', 2, 11, 2, '2017-11-16', '2017-11-22', NULL);
-select * from packages;
-select * from customers;
 
 INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
 	(1, 7),
@@ -454,6 +433,18 @@ INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
     (7, 4), 
     (6 ,4),
     (10, 10);
+    
+select * from continents;
+select * from countries;
+select * from cities;
+select * from hotels;
+select * from flights;
+select * from buses;
+select * from positions;
+select * from customers;
+select * from employees;
+select * from packages;
+select * from bookings;
 
 
 /*
