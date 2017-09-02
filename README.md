@@ -6,13 +6,13 @@
 1. Creating the ERD database diagram.
 
 2. Perform LDD operations:
-	* creating tables: create tables (minimum 4 tables), drop table
-	* altering the table structure: alter table (minimum 5 examples)
+	* creating tables: create tables (minimum 4 tables), drop table		✓
+	* altering the table structure: alter table (minimum 5 examples)	✓
 
 3. Updating data:
-	* insert (minimum 10 entries in each table)
-	* update (minimum 3 examples)
-	* delete (minimum 3 examples)
+	* insert (minimum 10 entries in each table)				✓
+	* update (minimum 3 examples)						✓
+	* delete (minimum 3 examples)						✓
 
 4. Various queries using select:
 	* Operators
