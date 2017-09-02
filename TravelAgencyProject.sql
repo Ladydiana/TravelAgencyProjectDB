@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS PACKAGES (
     packTransportIncluded BOOL DEFAULT false,
     packFlightNo VARCHAR(30) NULL,
     packBusNo INTEGER NULL,
-    FOREIGN KEY (packLocationID) REFERENCES COUNTRIES (ctryID)
+    FOREIGN KEY (packLocationID) REFERENCES CITIES (citID)
     ON UPDATE CASCADE,
     #FOREIGN KEY (packFlightNo) REFERENCES FLIGHTS (fliID)
     #ON UPDATE CASCADE, 
@@ -414,7 +414,7 @@ INSERT INTO buses(driver_id) values (4), (6);
 DELETE from packages where 1=1;
 INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packStartDate, packEndDate, packBusNo) VALUES
 					('Visit Istanbul', 9, 6, 2, '2017-09-20', '2017-09-27', 1),
-                    ('Antalya Holiday', 9, 2, 2, '2017-09-03', '2017-09-10', 2),
+                    ('Antalya Holiday', 8, 2, 2, '2017-09-03', '2017-09-10', 2),
                     ('Athens City Break', 4, 3, 2, '2017-10-13', '2017-10-16', 1)
 ;
 
@@ -428,7 +428,8 @@ INSERT INTO PACKAGES (packTitle, packLocationID, packHotelID, packPplNo, packSta
                     ('Taste Porto Wine', 6, 9, 2, '2017-08-25', '2017-2017-08-30', '9;10'),
                     ('Nisa Pink Beach',14, NULL, 2, '2017-09-13', '2017-09-18', '11;12'),
                     ('Have a walk on the Rambla', 5, 4, 2, '2017-10-11', '2017-10-15', '13;14'),
-                    ('Gondola on the canal', 2, 11, 2, '2017-11-16', '2017-11-22', NULL);
+                    ('Gondola on the canal', 2, 11, 2, '2017-11-16', '2017-11-22', NULL),
+                    ('Sydney in love', 15, 12, 2, '2018-03-12', '2018-03-27', NULL);
 
 INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
 	(1, 7),
@@ -460,6 +461,17 @@ select * from employees;
 select * from packages;
 select * from bookings;
 select * from flight_price_list;
+
+
+
+# Select all packages with the number of customers who selected it
+	select a.packTitle as 'Title', citName as 'City Name', count(a.bookCustomerID) as 'Number of Reservations'
+	from (	select packTitle, packLocationID, bookCustomerID from packages left join bookings
+			on bookPackageID=packID) as a 
+    inner join cities on
+	a.packLocationID=citID
+	group by (a.packLocationID)
+	;
 
 /*
 
