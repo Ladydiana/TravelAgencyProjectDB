@@ -514,9 +514,10 @@ select * from bookings;
 select * from flight_price_list;								
 
 # See for each customer money spent so far
-SELECT concat(custName, ' ', custSurname) as 'Name', count(bookCustomerID) as 'Number of bookings' 
-from customers join bookings
-on bookCustomerID=custID
+SELECT concat(custName, ' ', custSurname) as 'Name', count(bookCustomerID) as 'Number of bookings', sum(packPrice) as 'Total Spent (EUR)'
+from customers 
+join bookings on bookCustomerID=custID 
+join packages on bookPackageID=packID
 group by bookCustomerID;
 
 
