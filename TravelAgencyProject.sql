@@ -173,6 +173,20 @@ CREATE TABLE IF NOT EXISTS BOOKINGS (
     FOREIGN KEY (bookPackageID) REFERENCES PACKAGES(packID)
     ON UPDATE CASCADE
 	);
+    
+/*
+ *	VIEW which calculate the flight prices in case of return or one-way tickets
+ */
+#to, from, date_start, date_end, price
+DROP view if exists flight_price_list;
+CREATE VIEW flight_price_list AS
+SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'To', true as 'Return', date(a.fliStartTime) as 'Date start', date(b.fliStartTime) as 'Date Return', a.fliPrice+b.fliPrice as 'Price', 'EURO' as 'Currency'
+FROM flights a, flights b
+WHERE (a.fliStartPoint=b.fliEndPoint) and (a.fliEndPoint=b.fliStartPoint)
+and (a.fliStartTime < b.fliStartTime)
+UNION
+SELECT fliStartPoint as 'From', fliEndPoint as 'To', false as 'Return', date(fliStartTime) as 'Date start', NULL as 'Date Return', fliPrice as 'Price', 'EURO' as 'Currency'
+FROM flights;
 
 
 /*
@@ -380,7 +394,7 @@ DELETE FROM flights where 1=1;
 ALTER TABLE flights CHANGE fliPrice fliPrice DOUBLE(8,2);
 INSERT INTO flights	(fliStartPoint, fliEndPoint, fliStartTime, fliEndTime, fliClass, fliLayoverBool, fliPrice, fliPriceCurrency) values
 					(16, 3, '2017-09-21 08:50', '2017-09-21 10:30', 'Economy', false, 130, 'Euro'),
-                    (13, 16, '2017-09-27 11:00', '2017-09-27 12:30', 'Economy', false, 120, 'Euro'),
+                    (3, 16, '2017-09-27 11:00', '2017-09-27 12:30', 'Economy', false, 120, 'Euro'),
 					(16, 12, '2017-09-25 11:30', '2017-09-25 14:00', 'Economy', false, 200, 'Euro'),
                     (12, 16, '2017-10-03 14:00', '2017-09-25 16:00', 'Economy', false, 210, 'Euro'),
                     (16, 7, '2017-12-29 06:15', '2017-12-29 09:05', 'Economy', false, 110, 'Euro'),
@@ -445,7 +459,7 @@ select * from customers;
 select * from employees;
 select * from packages;
 select * from bookings;
-
+select * from flight_price_list;
 
 /*
 
