@@ -442,31 +442,35 @@ DELIMITER ;
 	Triggers
  */
  
- /*
+
+DROP TRIGGER IF EXISTS trgInsCountries; 
 DELIMITER $$
-DROP TRIGGER IF EXISTS trgInsCountries; $$
 CREATE TRIGGER trgInsCountries BEFORE INSERT ON COUNTRIES
 FOR EACH ROW BEGIN 
 	SET NEW.ctryName=trim(upper(NEW.ctryName));
 END; 
 $$
+DELIMITER ;
 
-DROP TRIGGER IF EXISTS trgInsCities; $$
+
+DROP TRIGGER IF EXISTS trgInsCities; 
+DELIMITER $$
 CREATE TRIGGER trgInsCities BEFORE INSERT ON CITIES
 FOR EACH ROW BEGIN
 	SET NEW.citName=trim(upper(NEW.citName));
 END;
 $$
+DELIMITER ;
 
-DROP TRIGGER IF EXISTS trgInsContinents; $$
+DROP TRIGGER IF EXISTS trgInsContinents; 
+DELIMITER $$
 CREATE TRIGGER trgInsContinents BEFORE INSERT ON CONTINENTS
 FOR EACH ROW BEGIN
 	SET NEW.contName = trim(upper(NEW.contName));
 END;
 $$
-
 DELIMITER ;
-*/
+
 
 
 /*
