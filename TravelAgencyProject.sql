@@ -345,6 +345,40 @@ END;
 $$
 DELIMITER ;
 
+SELECT * from packages;
+select * from cities;
+
+#Function to see a list of all package destinations
+DROP FUNCTION IF EXISTS fDestinations;
+DELIMITER $$
+CREATE FUNCTION fDestinations () returns varchar (1000)
+BEGIN
+	DECLARE destList VARCHAR(1000);
+    DECLARE v_destinatie VARCHAR(50);
+    DECLARE ok INT default 0;
+    DECLARE c CURSOR for SELECT citName FROM packages, cities WHERE packLocationID=citID order by citNAme;
+	DECLARE continue HANDLER for not found begin set ok=1; end;
+    
+    open c;
+		bucla:	loop
+					fetch c into  v_destinatie;
+					if ok=1 then leave bucla; 
+					#else set destList=concat(destList, ';', v_destinatie, '-', v_titlu);
+                    else set destList=concat_ws('; ', destList, v_destinatie);
+                    end if;
+				end loop bucla;
+    close c;
+	
+    #return destList;
+	if destList IS NOT NULL then
+		return destList;
+	else
+		return 'No packages added yet.';
+	end if;
+END;
+$$
+DELIMITER ;
+
 
 /*
 	Triggers
@@ -571,6 +605,7 @@ SELECT * FROM CITIES;
 SELECT * FROM CONTINENTS;
 SELECT fInsCountry('Japan', 'Asia');
 SELECT * FROM COUNTRIES;
+SELECT fDestinations();
 									
 select * from continents;
 select * from countries;
