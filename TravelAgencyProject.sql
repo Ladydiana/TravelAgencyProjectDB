@@ -415,6 +415,33 @@ END;
 $$
 DELIMITER ;
 
+SELECT * from hotels;
+select * from cities;
+
+#Function which returns a list of all cities with hotels
+DROP FUNCTION IF EXISTS fHotelCity;
+DELIMITER $$
+CREATE FUNCTION fHotelCity() RETURNS VARCHAR(1000)
+BEGIN
+	DECLARE citList VARCHAR(1000);
+    DECLARE v_cityName VARCHAR(30);
+    DECLARE ok INTEGER default 0;
+    DECLARE c CURSOR FOR SELECT distinct citName from cities join hotels on citID=hotLocID order by citName; 
+    DECLARE CONTINUE HANDLER for not found begin set ok=1; end;
+    open c;
+    bucla: loop
+			fetch c into v_cityName;
+            if ok=1 then
+				leave bucla;
+			else
+				set citList= concat_ws(',', citList, v_cityName);
+            end if;
+    end loop bucla;
+    close c;
+    return citList;
+END;
+$$
+DELIMITER ;
 
 
 /*
@@ -644,6 +671,7 @@ SELECT fInsCountry('Japan', 'Asia');
 SELECT * FROM COUNTRIES;
 SELECT fDestinations();
 select fCities('EUROPE');
+select fHotelCity();
 									
 select * from continents;
 select * from countries;
