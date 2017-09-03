@@ -221,6 +221,21 @@ END;
 $$
 DELIMITER ;
 
+# Procedure to show the status of package purchases for one curstomer received as input
+DROP PROCEDURE IF EXISTS customerStatus;
+DELIMITER $$
+CREATE PROCEDURE customerStatus(in custID INT)
+BEGIN
+	SELECT concat(custName, ' ', custSurname) as 'Name', count(bookCustomerID) as 'Number of bookings', sum(packPrice) as 'Total Spent (EUR)'
+	from customers 
+	join bookings on bookCustomerID=custID 
+	join packages on bookPackageID=packID
+    WHERE bookCustomerID=custID
+	group by bookCustomerID;
+END;
+$$
+DELIMITER ;
+
 #Procedure to calculate and update package prices
 DROP PROCEDURE IF EXISTS UpPackagePrices;
 DELIMITER $$
