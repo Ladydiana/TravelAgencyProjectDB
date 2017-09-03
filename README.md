@@ -16,7 +16,7 @@
 
 4. Various queries using select:
 	* Operators	✓
-	* predefined MySQL functions: mathematical ✓, comparison ✓, conditional, for strings ✓, for dates ✓
+	* predefined MySQL functions: mathematical ✓, comparison ✓, conditional✓, for strings ✓, for dates ✓
 	* group functions and conditions	✓
 	* joins: inner join, outer join		✓
 	* sub-queries (minimum 3 examples)	✓
