@@ -377,9 +377,6 @@ END;
 $$
 DELIMITER ;
 
-SELECT * FROM CONTINENTS;
-SELECT * FROM CITIES;
-SELECT * FROM countries;
 
 #SELECT contName from continents join countries on id_cont=contID join cities on id_country=ctryID where citName='Amsterdam';
 
@@ -415,9 +412,6 @@ END;
 $$
 DELIMITER ;
 
-SELECT * from hotels;
-select * from cities;
-
 #Function which returns a list of all cities with hotels
 DROP FUNCTION IF EXISTS fHotelCity;
 DELIMITER $$
@@ -434,7 +428,7 @@ BEGIN
             if ok=1 then
 				leave bucla;
 			else
-				set citList= concat_ws(',', citList, v_cityName);
+				set citList= concat_ws(', ', citList, v_cityName);
             end if;
     end loop bucla;
     close c;
