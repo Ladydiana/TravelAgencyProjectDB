@@ -345,8 +345,6 @@ END;
 $$
 DELIMITER ;
 
-SELECT * from packages;
-select * from cities;
 
 #Function to see a list of all package destinations
 DROP FUNCTION IF EXISTS fDestinations;
@@ -378,6 +376,45 @@ BEGIN
 END;
 $$
 DELIMITER ;
+
+SELECT * FROM CONTINENTS;
+SELECT * FROM CITIES;
+SELECT * FROM countries;
+
+#SELECT contName from continents join countries on id_cont=contID join cities on id_country=ctryID where citName='Amsterdam';
+
+
+#Function to return a list of all cities from a given continent
+DROP FUNCTION IF EXISTS fCities;
+DELIMITER $$
+CREATE FUNCTION fCities(continentName VARCHAR(30)) RETURNS varchar(1000)
+BEGIN
+	DECLARE citList VARCHAR(1000);
+    DECLARE v_city VARCHAR(30);
+	DECLARE ok INTEGER DEFAULT 0;
+    DECLARE c CURSOR FOR SELECT citName from cities join countries on id_country=ctryID join continents on id_cont=contID where contName=continentName;
+    DECLARE CONTINUE HANDLER for not found begin set ok=1; end;
+    
+    open c;
+    bucla: loop
+				fetch c into v_city;
+                if ok=1 then
+					leave bucla;
+				else
+					set citList=concat_ws(',', citList, v_city);
+                end if;
+	end loop bucla;
+    close c;
+
+	if citList is null then
+		return 'No cities served for this continent.';
+	else
+		return citList;
+        end if;
+END;
+$$
+DELIMITER ;
+
 
 
 /*
@@ -606,6 +643,7 @@ SELECT * FROM CONTINENTS;
 SELECT fInsCountry('Japan', 'Asia');
 SELECT * FROM COUNTRIES;
 SELECT fDestinations();
+select fCities('EUROPE');
 									
 select * from continents;
 select * from countries;
