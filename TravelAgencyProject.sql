@@ -299,6 +299,54 @@ $$
 DELIMITER ;
 
 /*
+ *	FUNCTIONS
+ */
+
+#Function to insert a country by name
+DROP FUNCTION IF EXISTS fInsCountry;
+DELIMITER $$
+CREATE FUNCTION fInsCountry (countryName VARCHAR(50), continentName VARCHAR(50)) RETURNS varchar(70)
+BEGIN
+	declare r_ok varchar(30) default "Country inserted.";
+	declare r_nok varchar(50) default "Wrong continent name. Please try again.";
+	declare continentID INTEGER DEFAULT NULL;
+    
+    select contID into continentID from continents where upper(trim(continentName))=upper(trim(contName));
+    
+    if continentID IS NULL then
+		return r_nok;
+	else
+		INSERT INTO countries(ctryName, id_cont) VALUES (countryName, continentID);
+        return r_ok;
+	end if;
+END;
+$$
+DELIMITER ;
+
+#Function to insert city by name
+DROP FUNCTION IF EXISTS fInsCity;
+DELIMITER $$
+CREATE FUNCTION fInsCity(cityName VARCHAR(50), countryName VARCHAR(50)) RETURNS VARCHAR(70)
+BEGIN
+	declare r_ok varchar(30) default "City inserted.";
+	declare r_nok varchar(70) default "Country does not exist in the database. Please add it or try again.";
+	declare countryID INTEGER default NULL;
+	
+    SELECT ctryID into countryID from countries where upper(trim(ctryName))=upper(trim(countryName)); 
+
+	CASE
+		WHEN countryID IS NULL then 
+						return r_nok;
+        WHEN countryID IS NOT NULL then 
+						INSERT INTO cities(citName, id_country) VALUES (cityName, countryID);
+	end case;
+    return r_ok;
+END;
+$$
+DELIMITER ;
+
+
+/*
 	Triggers
  */
  
@@ -328,46 +376,6 @@ $$
 DELIMITER ;
 */
 
-/* 
- *	FUNCTIONS
- */
- 
- /*
-DELIMITER $$
-DROP FUNCTION IF EXISTS fInsCity; $$
-CREATE FUNCTION fInsCity(cityName VARCHAR(45), countryName VARCHAR(45))
-RETURNS CHAR
-DETERMINISTIC
-BEGIN
-	DECLARE idCountry INT;
-    SELECT ctryID INTO idCountry from COUNTRIES WHERE trim(upper(countryName))=ctryName;
-    IF isnull(idCountry) then
-		RETURN 'Country not found.';
-    ELSE
-		INSERT INTO CITIES(cName, id_country) VALUES (cityName, idCountry);
-        RETURN 'Inserted.';
-	END IF;
-END $$
-
-DELIMITER $$
-DROP FUNCTION IF EXISTS fInsCountry; $$
-CREATE FUNCTION fInsCountry(countryName VARCHAR(45), continentName VARCHAR(45))
-RETURNS CHAR
-DETERMINISTIC
-BEGIN
-	DECLARE continent_id INT;
-    SELECT contID INTO continent_id from CONTINENTS WHERE contName=trim(upper(continentName));
-	IF isnull(continent_id) THEN
-		RETURN 'Invalid continent';
-	ELSE
-		INSERT INTO COUNTRIES(ctryName, id_cont) VALUES(countryName, continent_id);
-        return 'Inserted.';
-	END IF;
-END $$
-
-DELIMITER ;
-
-*/
 
 /*
  *	INSERTS
@@ -556,6 +564,13 @@ INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
 call UpEmpSalaries();
 call UpPackagePrices();
 call customerStatusAll();
+
+#DELETE FROM CITIES WHERE upper(citName)='MARSEILLE';
+SELECT fInsCity('Marseille', 'France');
+SELECT * FROM CITIES;
+SELECT * FROM CONTINENTS;
+SELECT fInsCountry('Japan', 'Asia');
+SELECT * FROM COUNTRIES;
 									
 select * from continents;
 select * from countries;
@@ -576,10 +591,10 @@ select * from flight_price_list;
 
 /*
 
-SELECT fInsCity('Marseille', 'France');
 
 
-SELECT * FROM CITIES;
+
+
 INSERT INTO CITIES (cName, id_country) VALUES ('Nice', 13);
 SELECT * FROM COUNTRIES;
 INSERT INTO COUNTRIES(name) VALUES (' Bulgaria  ');
