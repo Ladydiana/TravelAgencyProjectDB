@@ -21,11 +21,11 @@
 	* joins: inner join, outer join		✓
 	* sub-queries (minimum 3 examples)	✓
 
-5. Views (minimum 1 example)	✓
+5. Views (minimum 1 example)		✓
 
-6. Functions (minimum 3 examples)
+6. Functions (minimum 3 examples) 	✓
 
-7. Procedures (minimum 3 examples) ✓
+7. Procedures (minimum 3 examples) 	✓
 
 8. Cursors (minimum 3 examples)
 
