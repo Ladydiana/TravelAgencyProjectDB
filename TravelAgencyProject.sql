@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS EMPLOYEES (
     empAddress VARCHAR(60),
     empInsuranceNo VARCHAR(20)
 );
+ALTER TABLE employees CHANGE empSalary empSalary DOUBLE(10,2) NOT NULL;
 
 DROP TABLE IF EXISTS BUSES;
 CREATE TABLE IF NOT EXISTS BUSES (
@@ -160,7 +161,8 @@ CREATE TABLE IF NOT EXISTS PACKAGES (
     ON UPDATE CASCADE, 
     FOREIGN KEY (packHotelID) REFERENCES HOTELS (hotID) 
     ON UPDATE CASCADE 
-	);
+	);  
+
 
 DROP TABLE IF EXISTS BOOKINGS;
 CREATE TABLE IF NOT EXISTS BOOKINGS (
@@ -174,20 +176,112 @@ CREATE TABLE IF NOT EXISTS BOOKINGS (
     ON UPDATE CASCADE
 	);
     
+    
 /*
  *	VIEW which calculate the flight prices in case of return or one-way tickets
  */
+ 
 #to, from, date_start, date_end, price
 DROP view if exists flight_price_list;
 CREATE VIEW flight_price_list AS
-SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'To', true as 'Return', date(a.fliStartTime) as 'Date start', date(b.fliStartTime) as 'Date Return', a.fliPrice+b.fliPrice as 'Price', 'EUR' as 'Currency'
-FROM flights a, flights b
-WHERE (a.fliStartPoint=b.fliEndPoint) and (a.fliEndPoint=b.fliStartPoint)
-and (a.fliStartTime < b.fliStartTime)
-UNION
-SELECT fliStartPoint as 'From', fliEndPoint as 'To', false as 'Return', date(fliStartTime) as 'Date start', NULL as 'Date Return', fliPrice as 'Price', 'EUR' as 'Currency'
-FROM flights;
+	SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'To', true as 'Return', date(a.fliStartTime) as 'Date start', date(b.fliStartTime) as 'Date Return', a.fliPrice+b.fliPrice as 'Price', 'EUR' as 'Currency'
+	FROM flights a, flights b
+	WHERE (a.fliStartPoint=b.fliEndPoint) and (a.fliEndPoint=b.fliStartPoint)
+	and (a.fliStartTime < b.fliStartTime)
+	UNION
+	SELECT fliStartPoint as 'From', fliEndPoint as 'To', false as 'Return', date(fliStartTime) as 'Date start', NULL as 'Date Return', fliPrice as 'Price', 'EUR' as 'Currency'
+	FROM flights;
 
+/*
+ *	PROCEDURES
+ */
+ 
+#Procedure which updates employee salaries based on the minimum salary amount for their positions
+DROP PROCEDURE IF EXISTS UpEmpSalaries;
+DELIMITER $$
+CREATE PROCEDURE UpEmpSalaries ()
+BEGIN
+	UPDATE employees SET empSalary = (select posBaseSalary from positions where position_id=posID);
+END
+$$
+DELIMITER ;
+
+
+# Procedure to see for each customer the money spent so far and how many bookings they have
+DROP PROCEDURE IF EXISTS customerStatusAll;
+DELIMITER $$
+CREATE PROCEDURE customerStatusAll ()
+BEGIN
+	SELECT concat(custName, ' ', custSurname) as 'Name', count(bookCustomerID) as 'Number of bookings', sum(packPrice) as 'Total Spent (EUR)'
+	from customers 
+	join bookings on bookCustomerID=custID 
+	join packages on bookPackageID=packID
+	group by bookCustomerID;
+END;
+$$
+DELIMITER ;
+
+#Procedure to calculate and update package prices
+DROP PROCEDURE IF EXISTS UpPackagePrices;
+DELIMITER $$
+CREATE PROCEDURE UpPackagePrices()
+BEGIN
+	UPDATE packages set packPriceCurrency='EUR';  
+	#Step 1 update for the ones with flights included
+	UPDATE packages set packPrice= (	
+										SELECT d.price + (hotPricePErNight * datediff(packEndDate, packStartDate))  from
+													(	SELECT f.price, packLocationID as 'location' from flight_price_list f
+														join packages  on f.to=packLocationID
+														where f.return=1 
+													) d, hotels
+										WHERE d.location=packLocationID and hotLocID=d.location
+										
+									) 
+	where packTransportIncluded=true and packFlightNo is not null;
+	#Step 2 update for the ones with bus included
+	UPDATE packages set packPrice= (	
+										SELECT (hotPricePErNight * datediff(packEndDate, packStartDate)) + 100  from
+												hotels
+										WHERE hotLocID=packLocationID
+									) 
+	where packTransportIncluded=true and packBusNo is not null;
+	#Step 3 update for the ones with no transport included
+	UPDATE packages set packPrice= (	
+										SELECT (hotPricePErNight * datediff(packEndDate, packStartDate)) + 50  from
+												hotels
+										WHERE hotLocID=packLocationID
+									) 
+	where packTransportIncluded=false;
+	#Step 4 update for the ones with no hotel and only flight
+	UPDATE packages set packPrice= (	
+										SELECT d.price  from
+													(	SELECT f.price, packLocationID as 'location' from flight_price_list f
+														join packages  on f.to=packLocationID
+														where f.return=1 
+													) d
+										WHERE d.location=packLocationID 
+										
+									) 
+	where packTransportIncluded=true and packFlightNo is not null and packBusNo is null and (select hotLocID from hotels where hotLocId=packLocationID ) is null;
+END;
+$$
+DELIMITER ;
+
+# Procedure to view all packages with the number of customers who bought them
+DROP PROCEDURE IF EXISTS packageStatus;
+DELIMITER $$
+CREATE PROCEDURE packageStatus()
+begin
+	select a.packTitle as 'Title', citName as 'City Name', count(a.bookCustomerID) as 'Number of Reservations'
+	from (	select packTitle, packLocationID, bookCustomerID from packages left join bookings
+			on bookPackageID=packID) as a 
+    inner join cities on
+	a.packLocationID=citID
+	group by (a.packLocationID)
+	;
+end;
+$$
+DELIMITER ;
 
 /*
 	Triggers
@@ -384,11 +478,6 @@ INSERT INTO employees (empName, empSurname, position_id, empSalary, empAccountNo
 ;
 
 
-# Setting up salary as minimum salary for their function
-ALTER TABLE employees CHANGE empSalary empSalary DOUBLE(10,2) NOT NULL;
-UPDATE employees SET empSalary = (select posBaseSalary from positions where position_id=posID);
-
-
 INSERT INTO CITIES (citName, id_country) VALUES ('Bucharest', 6);
 DELETE FROM flights where 1=1;
 ALTER TABLE flights CHANGE fliPrice fliPrice DOUBLE(8,2);
@@ -449,56 +538,9 @@ INSERT INTO bookings (bookCustomerID, bookPackageID) VALUES
     (6 ,4),
     (10, 10);
     
-
-# Select all packages with the number of customers who selected it
-	select a.packTitle as 'Title', citName as 'City Name', count(a.bookCustomerID) as 'Number of Reservations'
-	from (	select packTitle, packLocationID, bookCustomerID from packages left join bookings
-			on bookPackageID=packID) as a 
-    inner join cities on
-	a.packLocationID=citID
-	group by (a.packLocationID)
-	;
-    
-UPDATE packages set packPriceCurrency='EUR';
-
-#Calculate package price
-#Step 1 update for the ones with flights included
-UPDATE packages set packPrice= (	
-									SELECT d.price + (hotPricePErNight * datediff(packEndDate, packStartDate))  from
-												(	SELECT f.price, packLocationID as 'location' from flight_price_list f
-													join packages  on f.to=packLocationID
-													where f.return=1 
-												) d, hotels
-									WHERE d.location=packLocationID and hotLocID=d.location
-                                    
-                                ) 
-where packTransportIncluded=true and packFlightNo is not null;
-#Step 2 update for the ones with bus included
-UPDATE packages set packPrice= (	
-									SELECT (hotPricePErNight * datediff(packEndDate, packStartDate)) + 100  from
-											hotels
-									WHERE hotLocID=packLocationID
-                                ) 
-where packTransportIncluded=true and packBusNo is not null;
-#Step 3 update for the ones with no transport included
-UPDATE packages set packPrice= (	
-									SELECT (hotPricePErNight * datediff(packEndDate, packStartDate)) + 50  from
-											hotels
-									WHERE hotLocID=packLocationID
-                                ) 
-where packTransportIncluded=false;
-#Step 4 update for the ones with no hotel
-UPDATE packages set packPrice= (	
-									SELECT d.price  from
-												(	SELECT f.price, packLocationID as 'location' from flight_price_list f
-													join packages  on f.to=packLocationID
-													where f.return=1 
-												) d
-									WHERE d.location=packLocationID 
-                                    
-                                ) 
-where packTransportIncluded=true and packFlightNo is not null and packBusNo is null and (select hotLocID from hotels where hotLocId=packLocationID ) is null;
-
+call UpEmpSalaries();
+call UpPackagePrices();
+call customerStatusAll();
 									
 select * from continents;
 select * from countries;
@@ -513,12 +555,7 @@ select * from packages;
 select * from bookings;
 select * from flight_price_list;								
 
-# See for each customer money spent so far
-SELECT concat(custName, ' ', custSurname) as 'Name', count(bookCustomerID) as 'Number of bookings', sum(packPrice) as 'Total Spent (EUR)'
-from customers 
-join bookings on bookCustomerID=custID 
-join packages on bookPackageID=packID
-group by bookCustomerID;
+
 
 
 
