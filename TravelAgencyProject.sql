@@ -135,6 +135,8 @@ CREATE TABLE IF NOT EXISTS HOTELS (
     ON UPDATE CASCADE
 	);
     
+ALTER table hotels ADD hotName VARCHAR(30);
+    
 DROP TABLE IF EXISTS PACKAGES;    
 CREATE TABLE IF NOT EXISTS PACKAGES (
 	packID INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -568,7 +570,6 @@ INSERT INTO CUSTOMERS	(custName, custSurname, custCardNo, custSocialSecurityNo, 
                         ('Harry', 'Potter', '5304721916534756', '221-78-6228', '21 Privet Drive, Little Winging, Surrey'),
                         ('Luke', 'Cage', '371380687639226', '135-22-9947', 'Merry Ln, Highbridge TA9 3PS, UK');
 
-ALTER table hotels ADD hotName VARCHAR(30);
 
 INSERT INTO hotels (hotLocID, hotName, hotAddress , hotContactEmail, hotPricePErNight) VALUES
 (12, 'Triple Fjord Hotel', 'Amsterdam 1', 'contact@fjordhotel.com', 50),
@@ -691,19 +692,3 @@ select * from employees;
 select * from packages;
 select * from bookings;
 select * from flight_price_list;								
-
-
-
-
-
-/*
-
-
-
-
-
-INSERT INTO CITIES (cName, id_country) VALUES ('Nice', 13);
-SELECT * FROM COUNTRIES;
-INSERT INTO COUNTRIES(name) VALUES (' Bulgaria  ');
-
-*/
