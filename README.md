@@ -29,7 +29,7 @@
 
 8. Cursors (minimum 3 examples)		✓
 
-9. Triggers (minimum 3 examples)
+9. Triggers (minimum 3 examples)	✓
 
 
 -----------------------------------------------------
