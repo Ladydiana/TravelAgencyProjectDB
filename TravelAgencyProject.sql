@@ -186,12 +186,12 @@ CREATE TABLE IF NOT EXISTS BOOKINGS (
 #to, from, date_start, date_end, price
 DROP view if exists flight_price_list;
 CREATE VIEW flight_price_list AS
-	SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'To', true as 'Return', date(a.fliStartTime) as 'Date start', date(b.fliStartTime) as 'Date Return', a.fliPrice+b.fliPrice as 'Price', 'EUR' as 'Currency'
+	SELECT  a.fliStartPoint as 'From', a.fliEndPoint as 'Destination', true as 'Round_trip', date(a.fliStartTime) as 'Date_start', date(b.fliStartTime) as 'Date_Return', a.fliPrice+b.fliPrice as 'Price', 'EUR' as 'Currency'
 	FROM flights a, flights b
 	WHERE (a.fliStartPoint=b.fliEndPoint) and (a.fliEndPoint=b.fliStartPoint)
 	and (a.fliStartTime < b.fliStartTime)
 	UNION
-	SELECT fliStartPoint as 'From', fliEndPoint as 'To', false as 'Return', date(fliStartTime) as 'Date start', NULL as 'Date Return', fliPrice as 'Price', 'EUR' as 'Currency'
+	SELECT fliStartPoint as 'From', fliEndPoint as 'Destination', false as 'Round_trip', date(fliStartTime) as 'Date_start', NULL as 'Date_Return', fliPrice as 'Price', 'EUR' as 'Currency'
 	FROM flights;
 
 /*
@@ -248,8 +248,8 @@ BEGIN
 	UPDATE packages set packPrice= (	
 										SELECT d.price + (hotPricePErNight * datediff(packEndDate, packStartDate))  from
 													(	SELECT f.price, packLocationID as 'location' from flight_price_list f
-														join packages  on f.to=packLocationID
-														where f.return=1 
+														join packages  on f.destination=packLocationID
+														where f.Round_Trip=1 
 													) d, hotels
 										WHERE d.location=packLocationID and hotLocID=d.location
 										
@@ -273,8 +273,8 @@ BEGIN
 	UPDATE packages set packPrice= (	
 										SELECT d.price  from
 													(	SELECT f.price, packLocationID as 'location' from flight_price_list f
-														join packages  on f.to=packLocationID
-														where f.return=1 
+														join packages  on f.Destination=packLocationID
+														where f.Round_trip=1 
 													) d
 										WHERE d.location=packLocationID 
 										
@@ -692,3 +692,4 @@ select * from employees;
 select * from packages;
 select * from bookings;
 select * from flight_price_list;								
+
