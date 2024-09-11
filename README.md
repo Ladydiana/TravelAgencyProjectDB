@@ -35,7 +35,7 @@
 -----------------------------------------------------
 ### EER Diagram
 
-![alt text](https://github.com/Ladydiana/TravelAgencyProjectDB/blob/master/EER_diagram_Screenshot_PNG.png)
+![alt text](https://github.com/Ladydiana/TravelAgencyProjectDB/blob/master/EER_Diagram_PNG.png)
 
 -----------------------------------------------------
 
